@@ -1,0 +1,16 @@
+{
+  "name": "Rain Alert",
+  "short_name": "RainAlert",
+  "description": "Real-time weather intelligence platform with rain prediction and alerts",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1e1b4b",
+  "background_color": "#0f0d1a",
+  "icons": [
+    {
+      "src": "/rain-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: rain-alert-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - rain-alert-network
+
+  # Express Backend
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: rain-alert-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/rain-alert
+      - PORT=5000
+      - JWT_SECRET=${JWT_SECRET:-rain-alert-super-secret-jwt-key-2024}
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_EMAIL=${VAPID_EMAIL:-mailto:admin@rainalert.app}
+      - CLIENT_URL=http://localhost:5173
+    depends_on:
+      - mongodb
+    networks:
+      - rain-alert-network
+
+  # React Frontend
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: rain-alert-client
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - server
+    networks:
+      - rain-alert-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  rain-alert-network:
+    driver: bridge
